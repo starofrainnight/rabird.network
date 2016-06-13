@@ -8,26 +8,29 @@ import re
 import sys
 import struct
 
+
 class ArpResolveError(KeyError):
     pass
+
 
 def mac_to_text(mac_address, separator=''):
     elements = []
     for c in mac_address:
-        # If the generated hex only have one charactor, we prefix with a "0".  
+        # If the generated hex only have one charactor, we prefix with a "0".
         elements.append(('00%s' % hex(ord(c))[2:])[-2:])
-    
+
     return separator.join(elements).upper()
+
 
 def text_to_mac(text):
     matched = re.findall('[0-9A-Fa-f]{1,2}', text)
     if len(matched) < 6:
         raise ValueError("")
-    
+
     mac = []
     for i in xrange(0, 6):
         mac.append(chr(int(matched[i], 16)))
-        
+
     return struct.pack('cccccc', *mac)
 
 '''
@@ -56,6 +59,8 @@ the IP existed in local network.
 Because the "arp" and "ping" program commons around windows and unix, and 
 does not required administration rights.  
 '''
+
+
 def arp_resolve(host):
     if sys.platform == "win32":
         subprocess.check_output(["ping", "-n", "1", host])
@@ -63,12 +68,11 @@ def arp_resolve(host):
     else:
         subprocess.check_output(["ping", "-c", "1", host])
         output = subprocess.check_output(["arp"])
-        
-    mac_expr = r'\D%s\D.*((?:[0-9a-fA-F]{2}[^0-9a-fA-F]+){5}[0-9a-fA-F]{2})' % re.escape(host)        
+
+    mac_expr = r'\D%s\D.*((?:[0-9a-fA-F]{2}[^0-9a-fA-F]+){5}[0-9a-fA-F]{2})' % re.escape(
+        host)
     matched = re.search(mac_expr, output)
     if matched is not None:
         return text_to_mac(matched.group(1))
-        
-    raise ArpResolveError("Failed to resolve for %s" % host)
 
-    
+    raise ArpResolveError("Failed to resolve for %s" % host)
