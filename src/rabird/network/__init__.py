@@ -33,35 +33,34 @@ def text_to_mac(text):
 
     return struct.pack('cccccc', *mac)
 
-'''
-Resolve the host to MAC address.
-
-@note: This method depends on "arp" and "ping" commands, and it's slow.
-
-All ARP related functions are all have some limitations:
-
-1. In Windows
-
-Windows XP SP2 (and greater) no longer natively support raw sockets,
-We use a trick to get the arp result, not by a programming
-
-2. In Unix
-
-May require the root abilities
-
-So we use a simple trick to get what we want :
-
-1. Ping the IP, neither it success or not, arp entry appear in arp cache if
-the IP existed in local network.
-
-2. Find the IP and matched MAC in arp cache.
-
-Because the "arp" and "ping" program commons around windows and unix, and
-does not required administration rights.
-'''
-
 
 def arp_resolve(host):
+    """Resolve the host to MAC address.
+
+    @note: This method depends on "arp" and "ping" commands, and it's slow.
+
+    All ARP related functions are all have some limitations:
+
+    1. In Windows
+
+    Windows XP SP2 (and greater) no longer natively support raw sockets,
+    We use a trick to get the arp result, not by a programming
+
+    2. In Unix
+
+    May require the root abilities
+
+    So we use a simple trick to get what we want :
+
+    1. Ping the IP, neither it success or not, arp entry appear in arp cache if
+    the IP existed in local network.
+
+    2. Find the IP and matched MAC in arp cache.
+
+    Because the "arp" and "ping" program commons around windows and unix, and
+    does not required administration rights.
+    """
+
     if sys.platform == "win32":
         subprocess.check_output(["ping", "-n", "1", host])
         output = subprocess.check_output(["arp", "-a"])
