@@ -49,15 +49,15 @@ We use a trick to get the arp result, not by a programming
 
 May require the root abilities
 
-So we use a simple trick to get what want :  
+So we use a simple trick to get what we want :
 
 1. Ping the IP, neither it success or not, arp entry appear in arp cache if
 the IP existed in local network.
 
 2. Find the IP and matched MAC in arp cache.
 
-Because the "arp" and "ping" program commons around windows and unix, and 
-does not required administration rights.  
+Because the "arp" and "ping" program commons around windows and unix, and
+does not required administration rights.
 '''
 
 
@@ -68,6 +68,8 @@ def arp_resolve(host):
     else:
         subprocess.check_output(["ping", "-c", "1", host])
         output = subprocess.check_output(["arp"])
+
+    output = output.decode()
 
     mac_expr = r'\D%s\D.*((?:[0-9a-fA-F]{2}[^0-9a-fA-F]+){5}[0-9a-fA-F]{2})' % re.escape(
         host)
