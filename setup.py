@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from ez_setup import use_setuptools
-use_setuptools()
+from rabird_bootstrap import use_rabird
+use_rabird()
 
 import os
 import os.path
@@ -13,18 +13,13 @@ import rabird.core.distutils
 import rabird.core.logging
 from setuptools import setup, find_packages
 
-from_package = 'src'
-to_package = 'rabird'
 package_name = 'rabird.network'
 
-rabird.core.logging.load_default_config()
-
 # Convert source to v2.x if we are using python 2.x.
-rabird.core.distutils.preprocess_sources_for_compatible(
-    from_package, os.path.realpath(os.curdir))
+source_dir = rabird.core.distutils.preprocess_source()
 
 # Exclude the original source package, only accept the preprocessed package!
-our_packages = find_packages(exclude=[from_package, '%s.*' % (from_package)])
+our_packages = find_packages(where=source_dir)
 
 our_requires = [
 ]
@@ -34,18 +29,20 @@ setup(
     version='.'.join(map(str, (0, 0, 1))),
     author='Hong-She Liang',
     author_email='starofrainnight@gmail.com',
-    url='',
-    py_modules=[to_package],
+    url="https://github.com/starofrainnight/%s" % package_name,
     description='%s utilities' % package_name,
     classifiers=[
-                'Programming Language :: Python :: 2',
-                'Programming Language :: Python :: 3',
-                'Intended Audience :: Developers',
-                'License :: OSI Approved :: MIT License',
-                'Topic :: Software Development :: Libraries',
-                'Topic :: Utilities',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Utilities',
     ],
     install_requires=our_requires,
+    package_dir={"": source_dir},
     packages=our_packages,
-    namespace_packages=['rabird'],
+    namespace_packages=[package_name.split(".")[0]],
+    # If we don"t set the zip_safe to False, pip can"t find us.
+    zip_safe=False,
 )
